@@ -1,0 +1,17 @@
+#!/bin/bash
+
+#SBATCH -J InflDolozky
+#SBATCH -o %x.%j.out
+#SBATCH -e %x.%j.err
+#SBATCH -p gpu-troja
+#SBATCH --gres=gpu:1
+#SBATCH --mem=16G
+#SBATCH --constraint="gpuram16G|gpuram24G"
+
+# Print each command to STDERR before executing (expanded), prefixed by "+ "
+set -o xtrace
+
+source ~/.bashrc
+conda activate llms
+python pokus_lama.py
+

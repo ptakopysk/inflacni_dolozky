@@ -1,0 +1,17 @@
+#!/bin/bash
+
+#SBATCH -J MistralInflDolozky
+#SBATCH -o %x.%j.out
+#SBATCH -e %x.%j.err
+#SBATCH -p gpu-ms
+#SBATCH --gres=gpu:1
+#SBATCH --mem=24G
+#SBATCH --constraint="gpuram24G"
+
+# Print each command to STDERR before executing (expanded), prefixed by "+ "
+set -o xtrace
+
+source ~/.bashrc
+conda activate llms
+python pokus_mistral.py
+
