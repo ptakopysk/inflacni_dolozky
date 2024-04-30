@@ -16,9 +16,9 @@ import torch
 
 model_opts = [
         "lchaloupsky/czech-gpt2-oscar",
-        "BUT-FIT/Czech-GPT-2-XL-133k",
-        "BUT-FIT/CSTinyLlama-1.2B",
-        "simecek/cswikimistral_0.1"
+        #"BUT-FIT/Czech-GPT-2-XL-133k",
+        #"BUT-FIT/CSTinyLlama-1.2B",
+        #"simecek/cswikimistral_0.1"
         ]
 max_lengths = [
         1024,
@@ -39,7 +39,7 @@ for model_index in range(len(model_opts)):
     model = AutoModelForCausalLM.from_pretrained(model_name)
     model = model.to(device)
 
-    full_prompt = 1000 * "Jak se Napoleon zove? "
+    full_prompt = "PRDEL " + 1000 * "Jak se Napoleon zove? " + "PRDEL!"
     logging.info(full_prompt)
     tokenized_prompt = tokenizer.encode(full_prompt,
             return_tensors='pt',
@@ -52,7 +52,9 @@ for model_index in range(len(model_opts)):
             max_new_tokens=output_len,
             pad_token_id= tokenizer.pad_token_id,
             eos_token_id = tokenizer.eos_token_id)
-    decoded = tokenizer.decode(out[0], skip_special_tokens=True)
+    logging.info(tokenized_prompt.shape)
+    logging.info(out.shape)
+    decoded = tokenizer.decode(out[0][tokenized_prompt.shape[1]:], skip_special_tokens=True)
     logging.info("Writing output")
     with open(f'napoleon_{model_index}_.txt', 'w') as outfile:
         print(decoded, file=outfile)

@@ -1,6 +1,6 @@
 #!/bin/bash
 
-#SBATCH -J InflDolozky
+#SBATCH -J InflDolozky2
 #SBATCH -o %x.%j.out
 #SBATCH -e %x.%j.err
 #SBATCH -p gpu-troja
@@ -13,5 +13,5 @@ set -o xtrace
 
 source ~/.bashrc
 conda activate llms
-python pokus.py
+python pokus2.py
 

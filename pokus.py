@@ -30,7 +30,7 @@ output_len = 512
 
 device = "cuda:0" if torch.cuda.is_available() else "cpu"
 
-prompt_opts = ["Velikost inflační doložky za rok 2017?", "Co se v předchozím textu píše o inflační doložce?", "Vypiš z předchozího textu informace týkající se inflační doložky."]
+prompt_opts = ["Velikost inflační doložky za rok 2017?", "Co se v textu píše o inflační doložce?", "Vypiš z textu informace týkající se inflační doložky."]
 
 for model_index in range(len(model_opts)):
     model_name = model_opts[model_index]
@@ -42,12 +42,12 @@ for model_index in range(len(model_opts)):
     model = model.to(device)
 
     logging.info("Process files")
-    for i in range(6):
+    for i in range(1,6):
         with open(f'smlouva{i}.txt') as infile:
             text = infile.read()
             for prompt_index in range(len(prompt_opts)):
                 prompt = prompt_opts[prompt_index]
-                full_prompt = text + "\n\n" + prompt
+                full_prompt = prompt + "\n\n" + text + "\n\n" + prompt
                 logging.info(full_prompt)
                 tokenized_prompt = tokenizer.encode(full_prompt,
                         return_tensors='pt',
@@ -59,7 +59,7 @@ for model_index in range(len(model_opts)):
                         max_new_tokens=output_len,
                         pad_token_id= tokenizer.pad_token_id,
                         eos_token_id = tokenizer.eos_token_id)
-                decoded = tokenizer.decode(out[0], skip_special_tokens=True)
+                decoded = tokenizer.decode(out[0][tokenized_prompt.shape[1]:], skip_special_tokens=True)
                 with open(f'result_{model_index}_{i}_{prompt_index}.txt', 'w') as outfile:
                     print(decoded, file=outfile)
 
