@@ -12,6 +12,7 @@ logging.basicConfig(
 
 # Load model directly
 from transformers import AutoTokenizer, AutoModelForCausalLM
+import torch
 
 model_opts = [
         "lchaloupsky/czech-gpt2-oscar",
@@ -27,6 +28,8 @@ max_lengths = [
         ]
 output_len = 512
 
+device = "cuda:0" if torch.cuda.is_available() else "cpu"
+
 for model_index in range(len(model_opts)):
     model_name = model_opts[model_index]
     logging.info(f"Load model {model_name}")
@@ -34,14 +37,14 @@ for model_index in range(len(model_opts)):
     model_max_len = max_lengths[model_index]
     tokenizer.model_max_length = model_max_len
     model = AutoModelForCausalLM.from_pretrained(model_name)
-
+    model = model.to(device)
 
     full_prompt = 1000 * "Jak se Napoleon zove? "
     logging.info(full_prompt)
     tokenized_prompt = tokenizer.encode(full_prompt,
             return_tensors='pt',
             max_length=model_max_len-output_len,
-            truncation=True)
+            truncation=True).to(device)
     logging.info(tokenized_prompt)
     
     out = model.generate(
@@ -51,7 +54,7 @@ for model_index in range(len(model_opts)):
             eos_token_id = tokenizer.eos_token_id)
     decoded = tokenizer.decode(out[0], skip_special_tokens=True)
     logging.info("Writing output")
-    with open(f'napoleon_{model_index}.txt', 'w') as outfile:
+    with open(f'napoleon_{model_index}_.txt', 'w') as outfile:
         print(decoded, file=outfile)
     logging.info("Done with this model")
 
