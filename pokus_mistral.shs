@@ -5,8 +5,8 @@
 #SBATCH -e %x.%j.err
 #SBATCH -p gpu-ms
 #SBATCH --gres=gpu:1
-#SBATCH --mem=24G
-#SBATCH --constraint="gpuram24G"
+#SBATCH --mem=48G
+#SBATCH --constraint="gpuram48G"
 
 # Print each command to STDERR before executing (expanded), prefixed by "+ "
 set -o xtrace
